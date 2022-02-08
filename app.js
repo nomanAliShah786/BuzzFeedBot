@@ -3,6 +3,7 @@ const puppeteer = require('puppeteer');
 const swig = require('swig');
 const fs = require('fs');
 const date = require('date-and-time');
+const timediff = require('timediff');
 //
 const USERNAME_SELECTOR = '#email';
 
@@ -14,15 +15,15 @@ const LOGO = '#member-sidebar--menu-signupsid';
 
 const TABS = '#myTab';
 
-const TAB_8 = '#myTab li:nth-child(9) a'; 
+const TAB_8 = '#myTab li:nth-child(9) a';
 
 const TABLE = '.SUGtableouter';
 
-const COURT_830_1 = '.SUGtableouter tbody tr:nth-child(4) td:nth-child(2) tr:nth-child(13) input';
+const COURT_830_1 = '.SUGtableouter tbody tr:nth-child(2) td:nth-child(2) tr:nth-child(13) input';
 
 const COURT_830_2 = '.table.ng-scope tr:nth-child(1) input';
 
-const COURT_930_1 = '.SUGtableouter tbody tr:nth-child(5) td:nth-child(2) tr:nth-child(13) input';
+const COURT_930_1 = '.SUGtableouter tbody tr:nth-child(3) td:nth-child(2) tr:nth-child(13) input';
 
 const COURT_930_2 = '.table.ng-scope tr:nth-child(2) input';
 
@@ -39,6 +40,11 @@ function validateInit(email,password,time,court){
         console.log("Valid Time");
         if(court >= 1 && court <= 13){
             console.log("Valid Court");
+            var timeDate = date.format(new Date(),'YYYY-MM-DD') + ' ' + time;
+            console.log("Waiting for two minutes differnce...");
+            while(timediff(date.format(new Date(),'YYYY-MM-DD HH:mm:ss'),timeDate,'m').minutes > 2){
+
+            }
             browser = {
                 uuid: email,
                 pass: password,
@@ -91,7 +97,7 @@ function reserver(browser){
                 try{
                     await page.waitForSelector(TABLE, {
                         visible: true,
-                        timeout: 3000
+                        timeout: 1000
                     });
                 }catch(e){
                     page.reload();
@@ -112,7 +118,7 @@ function reserver(browser){
             }
             //9:30 court
             try{
-                await page.waitForSelector(court830, {
+                await page.waitForSelector(court930, {
                     visible: true,
                 });
                 await page.$eval(court930, i => i.click());
@@ -213,6 +219,7 @@ async function startBrowser(browser) {
     });  
     browser.instance.on('disconnected', function(){
         browser.instance = undefined;
+        console.log("Disconnected!");
     }); 
     browser.page = await browser.instance.newPage();
 
@@ -294,7 +301,7 @@ function playTest(url, browser) {
 
                 //browserTimeout(browser,1500000);
 
-                await browser.page.setDefaultNavigationTimeout(15000000);
+                await browser.page.setDefaultNavigationTimeout(1500000);
             
             }catch(e){
 
