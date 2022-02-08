@@ -43,8 +43,9 @@ function validateInit(email,password,time,court){
             var timeDate = date.format(new Date(),'YYYY-MM-DD') + ' ' + time;
             console.log("Waiting for two minutes differnce...");
             while(timediff(date.format(new Date(),'YYYY-MM-DD HH:mm:ss'),timeDate,'m').minutes > 2){
-
+                // Do Nothing
             }
+
             browser = {
                 uuid: email,
                 pass: password,
