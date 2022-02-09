@@ -17,6 +17,8 @@ const TABS = '#myTab';
 
 const TAB_8 = '#myTab li:nth-child(9) a';
 
+const TAB = '#myTab li';
+
 const TABLE = '.SUGtableouter';
 
 const COURT_830_1 = '.SUGtableouter tbody tr:nth-child(2) td:nth-child(2) tr:nth-child(13) input';
@@ -92,7 +94,20 @@ function reserver(browser){
             await page.waitForSelector(TABS, {
                 visible: true,
             });
-            await page.$eval(TAB_8, i => i.click());
+            var now = new Date();
+            const sevenDays = date.format(date.addDays(convertTZ(now,"America/Los_Angeles"), +7),'M/D/YY');
+            const tabs = await page.$$(TAB);
+            for(let i = 0; i < tabs.length; i++){
+                let tab = tabs[i];
+                let tabContent = await tab.$eval('span', i => i.innerHTML);
+                tabContent = tabContent.replace(/[^\d/]/g,"");
+                if(tabContent===sevenDays){
+                    console.log("Matched");
+                    await tab.$eval('a',i => i.click());
+                    break;
+                }
+            }
+            //await page.$eval(TAB_8, i => i.click());
             // await page.waitForSelector(TABLE, {
             //     visible: true
             // });
@@ -100,7 +115,7 @@ function reserver(browser){
                 try{
                     await page.waitForSelector(TABLE, {
                         visible: true,
-                        timeout: 1000
+                        timeout: 2000
                     });
                 }catch(e){
                     page.reload();
@@ -488,6 +503,9 @@ const waitTillHTMLRendered = async (page, timeout = 30000) => {
     }  
 };
 
+function convertTZ(date, tzString) {
+    return new Date((typeof date === "string" ? new Date(date) : date).toLocaleString("en-US", {timeZone: tzString}));   
+}
 yargs.command({
     command : 'run',
     describe: 'Run the Automation',
