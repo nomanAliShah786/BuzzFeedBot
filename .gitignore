@@ -1,5 +1,2 @@
-.DS_Store
-app2.js
 package-lock.json
-playground.js
 node_modules/*
